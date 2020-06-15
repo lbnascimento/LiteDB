@@ -26,7 +26,7 @@ namespace LiteDB
         /// <summary>
         /// Operation definition by methods with defined expression type (operators are in precedence order)
         /// </summary>
-        private static readonly Dictionary<string, Tuple<string, MethodInfo, BsonExpressionType>> _operators = new Dictionary<string, Tuple<string, MethodInfo, BsonExpressionType>>
+        internal static readonly Dictionary<string, Tuple<string, MethodInfo, BsonExpressionType>> _operators = new Dictionary<string, Tuple<string, MethodInfo, BsonExpressionType>>
         {
             // arithmetic
             ["%"] = Tuple.Create("%", M("MOD"), BsonExpressionType.Modulo),
@@ -1263,7 +1263,7 @@ namespace LiteDB
         /// <summary>
         /// Create an array expression with 2 values (used only in BETWEEN statement)
         /// </summary>
-        private static BsonExpression NewArray(BsonExpression item0, BsonExpression item1)
+        internal static BsonExpression NewArray(BsonExpression item0, BsonExpression item1)
         {
             var values = new Expression[] { item0.Expression, item1.Expression };
 

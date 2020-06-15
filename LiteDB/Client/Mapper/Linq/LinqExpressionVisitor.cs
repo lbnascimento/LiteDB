@@ -78,6 +78,28 @@ namespace LiteDB
 
                     e = BsonExpression.Create(expression, _parameters);
                 }
+                else if(e.Type == BsonExpressionType.And && e.Left.Type == BsonExpressionType.GreaterThanOrEqual && e.Right.Type == BsonExpressionType.LessThanOrEqual &&
+                        e.Left.Left.Source == e.Right.Left.Source)
+                        //checks if expression is of the form "something >= x && something <= y", to be transformed into between expression
+                {
+                    BsonExpression arr = BsonExpressionParser.NewArray(e.Left.Right, e.Right.Right);
+
+                    var op = BsonExpressionParser._operators["BETWEEN"];
+
+                    e = new BsonExpression
+                    {
+                        Type = BsonExpressionType.Between,
+                        Parameters = e.Parameters,
+                        IsImmutable = e.Left.IsImmutable && e.Right.IsImmutable,
+                        UseSource = e.Left.UseSource || e.Right.UseSource,
+                        IsScalar = true,
+                        Fields = e.Fields,
+                        Expression = Expression.Call(op.Item2, new ExpressionContext().Collation, e.Left.Left.Expression, arr.Expression),
+                        Left = e.Left.Left,
+                        Right = arr,
+                        Source = e.Left.Left.Source + op.Item1 + arr.Source
+                    };
+                }
 
                 return e;
             }
